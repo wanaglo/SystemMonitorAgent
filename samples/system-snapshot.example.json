@@ -1,0 +1,44 @@
+{
+  "CollectedAtUtc": "2026-05-14T14:22:31Z",
+  "Hostname": "monitor-node-01",
+  "IpAddresses": [
+    "10.20.30.40",
+    "192.168.10.15"
+  ],
+  "WindowsVersion": "Microsoft Windows Server 2022 Standard (10.0.20348)",
+  "UptimeSeconds": 86400.52,
+  "CpuUsagePercent": 23.4,
+  "Ram": {
+    "TotalBytes": 34359738368,
+    "UsedBytes": 18119393280,
+    "UsagePercent": 52.73
+  },
+  "Disks": [
+    {
+      "Drive": "C:\\",
+      "TotalBytes": 536870912000,
+      "FreeBytes": 214748364800,
+      "FreePercent": 40.0
+    },
+    {
+      "Drive": "D:\\",
+      "TotalBytes": 1073741824000,
+      "FreeBytes": 805306368000,
+      "FreePercent": 75.0
+    }
+  ],
+  "RunningProcesses": [
+    "devenv",
+    "explorer",
+    "notepad",
+    "powershell",
+    "sqlservr"
+  ],
+  "WatchedProcesses": {
+    "devenv": true,
+    "explorer": true,
+    "notepad": true,
+    "sqlservr": true,
+    "w3wp": false
+  }
+}

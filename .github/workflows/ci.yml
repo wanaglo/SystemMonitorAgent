@@ -1,0 +1,84 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_VERSION: 8.0.x
+  CONFIGURATION: Release
+  SOLUTION_PATH: SystemMonitorAgent.sln
+  WORKER_PROJECT_PATH: src\SystemMonitorAgent.Worker\SystemMonitorAgent.Worker.csproj
+  TEST_RESULTS_DIR: artifacts\test-results
+  PUBLISH_DIR: artifacts\publish\SystemMonitorAgent
+
+jobs:
+  build-test-publish:
+    name: Build, test, publish
+    runs-on: windows-latest
+    timeout-minutes: 20
+
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore
+        run: dotnet restore $env:SOLUTION_PATH -nologo
+
+      - name: Build
+        run: dotnet build $env:SOLUTION_PATH -c $env:CONFIGURATION --no-restore -p:ContinuousIntegrationBuild=true -nologo
+
+      - name: Test
+        run: >
+          dotnet test $env:SOLUTION_PATH
+          -c $env:CONFIGURATION
+          --no-build
+          -p:ContinuousIntegrationBuild=true
+          --logger "trx;LogFileName=SystemMonitorAgent.UnitTests.trx"
+          --results-directory $env:TEST_RESULTS_DIR
+          -nologo
+
+      - name: Publish Worker
+        run: >
+          dotnet publish $env:WORKER_PROJECT_PATH
+          -c $env:CONFIGURATION
+          -r win-x64
+          --self-contained false
+          --no-restore
+          -p:ContinuousIntegrationBuild=true
+          -o $env:PUBLISH_DIR
+          -nologo
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: ${{ env.TEST_RESULTS_DIR }}
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Upload published worker
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: system-monitor-agent-win-x64
+          path: ${{ env.PUBLISH_DIR }}
+          if-no-files-found: error
+          retention-days: 14

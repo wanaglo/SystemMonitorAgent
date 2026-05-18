@@ -1,0 +1,28 @@
+# Build outputs
+[Bb]in/
+[Oo]bj/
+artifacts/
+TestResults/
+
+# Logs and test artifacts
+*.log
+*.trx
+*.coverage
+*.coveragexml
+
+# IDE and user-specific files
+.vs/
+.vscode/
+.idea/
+_ReSharper*/
+*.DotSettings.user
+*.suo
+*.user
+*.userosscache
+*.rsuser
+*.sln.docstates
+*.slnLaunch.user
+
+# OS-generated files
+Thumbs.db
+Desktop.ini

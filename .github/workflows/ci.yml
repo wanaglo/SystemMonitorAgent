@@ -14,6 +14,7 @@ concurrency:
 env:
   DOTNET_VERSION: 8.0.x
   CONFIGURATION: Release
+  PUBLISH_RUNTIME: win-x64
   SOLUTION_PATH: SystemMonitorAgent.sln
   WORKER_PROJECT_PATH: src\SystemMonitorAgent.Worker\SystemMonitorAgent.Worker.csproj
   TEST_RESULTS_DIR: artifacts\test-results
@@ -39,7 +40,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore
-        run: dotnet restore $env:SOLUTION_PATH -nologo
+        run: dotnet restore $env:SOLUTION_PATH -r $env:PUBLISH_RUNTIME -nologo
 
       - name: Build
         run: dotnet build $env:SOLUTION_PATH -c $env:CONFIGURATION --no-restore -p:ContinuousIntegrationBuild=true -nologo
@@ -58,7 +59,7 @@ jobs:
         run: >
           dotnet publish $env:WORKER_PROJECT_PATH
           -c $env:CONFIGURATION
-          -r win-x64
+          -r $env:PUBLISH_RUNTIME
           --self-contained false
           --no-restore
           -p:ContinuousIntegrationBuild=true
